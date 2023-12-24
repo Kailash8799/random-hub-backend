@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
             res.json({ success: false, message: "User already exits" });
             return;
         }
-        var hashPassword = CryptoJS.AES.encrypt(password, process.env.PASSWORD_KEY).toString();
+        const hashPassword = CryptoJS.AES.encrypt(password, process.env.PASSWORD_KEY).toString();
 
         const newuser = new User({
             username: username,

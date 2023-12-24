@@ -37,7 +37,7 @@ router.post("/sendemail", async (req, res) => {
         const htmlemail = await verifyemail(token);
         const email_responce = await sendMail({ htmlemail: htmlemail, subject: "Account Verification", to_email: email })
         if (email_responce) {
-            res.json({token, success: true, message: "Verification email sent successfully" });
+            res.json({ token, success: true, message: "Verification email sent successfully" });
             return;
         } else {
             res.json({ success: false, message: "Some error occured! while sending email" });
@@ -66,7 +66,7 @@ router.post("/verify", async (req, res) => {
             res.json({ success: false, message: "token not valid" });
             return;
         }
-        const olduser = await User.findOne({ $and: [{ id }, { email }] });
+        const olduser = await User.findOne({ _id:id, email });
         if (!olduser) {
             res.json({ success: false, message: "token is not valid" });
             return;
@@ -80,7 +80,7 @@ router.post("/verify", async (req, res) => {
         return;
     } catch (error) {
         console.log(error);
-        res.json({ success: false, message: "Some error occured!" }).status(401);
+        res.json({ success: false, message: "token is invalid" }).status(401);
         return;
     }
 })

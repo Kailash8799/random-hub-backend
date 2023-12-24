@@ -21,14 +21,17 @@ router.post("/", async (req, res) => {
             res.json({ success: false, message: "Invalid credentials" });
             return;
         }
-
+        if (!(olduser?.emailVerified)) {
+            res.json({ success: false, message: "Email not verified!" });
+            return;
+        }
         var cypherpassword = CryptoJS.AES.decrypt(olduser?.password, process.env.PASSWORD_KEY);
         var originalpassword = cypherpassword.toString(CryptoJS.enc.Utf8);
         if (originalpassword !== password) {
             res.json({ success: false, message: "Invalid credentials" });
             return;
         }
-        const token = jwt.sign({  name: olduser?.username, email: olduser?.email, success: true }, process.env.JWT_SECRET, { expiresIn: '10d', algorithm: "HS384" });
+        const token = jwt.sign({ id: olduser?._id, name: olduser?.username, email: olduser?.email }, process.env.JWT_SECRET, { expiresIn: '10d', algorithm: "HS384" });
 
         res.json({ token, success: true, message: "Login Successfull" });
 
