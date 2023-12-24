@@ -18,7 +18,8 @@ const io = new Server(server, {});
 
 connectDb();
 
-app.use(cors({ origin: `${process.env.RANDOMHUB}`}));
+app.use(cors());
+// app.use(cors({ origin: `${process.env.RANDOMHUB}`}));
 app.use(bodyParser.json());
 app.use("/", welcomeModule)
 app.use("/v1/users/signin", loginModule);

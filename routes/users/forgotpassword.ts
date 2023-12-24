@@ -23,7 +23,7 @@ router.post("/sendemail", async (req, res) => {
             res.json({ success: false, message: "No user found with this email" });
             return;
         }
-        const token = jwt.sign({ id: olduser?._id, email: olduser?.email }, process.env.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
+        const token = jwt.sign({ email: olduser?.email }, process.env.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
         const htmlemail = await forgotpasswordemailtemp(token);
         const email_responce = await sendMail({ htmlemail: htmlemail, subject: "Reset password", to_email: email })
         if (email_responce) {
@@ -51,12 +51,12 @@ router.post("/resetpassword", async (req, res) => {
             res.json({ success: false, message: "token is invalid" });
             return;
         }
-        const { email, id } = await jwt.verify(token, process.env.JWT_SECRET);
-        if (email === undefined || id === undefined) {
+        const { email } = await jwt.verify(token, process.env.JWT_SECRET);
+        if (email === undefined) {
             res.json({ success: false, message: "token is invalid" });
             return;
         }
-        const olduser = await User.findOne({ _id: id, email });
+        const olduser = await User.findOne({ email });
         if (!olduser) {
             res.json({ success: false, message: "No user found with this email" });
             return;

@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
             res.json({ success: false, message: "Some error occured while creating account!" });
             return;
         }
-        const token = jwt.sign({ id: u?._id, username, email }, process.env.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
+        const token = jwt.sign({ username, email }, process.env.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
         const htmlemail = await verifyemail(token);
         const email_responce = await sendMail({ htmlemail: htmlemail, subject: "Account Verification", to_email: email })
         if (email_responce) {

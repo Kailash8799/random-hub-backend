@@ -33,7 +33,7 @@ router.post("/sendemail", async (req, res) => {
             res.json({ success: false, message: "Email already verified!" });
             return;
         }
-        const token = jwt.sign({ id: olduser?._id, email: olduser?.email, success: true }, process.env.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
+        const token = jwt.sign({ email: olduser?.email, success: true }, process.env.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
         const htmlemail = await verifyemail(token);
         const email_responce = await sendMail({ htmlemail: htmlemail, subject: "Account Verification", to_email: email })
         if (email_responce) {
@@ -61,12 +61,12 @@ router.post("/verify", async (req, res) => {
             res.json({ success: false, message: "token not valid" });
             return;
         }
-        const { email, id } = await jwt.verify(token, process.env.JWT_SECRET);
-        if (email === undefined || id === undefined) {
+        const { email } = await jwt.verify(token, process.env.JWT_SECRET);
+        if (email === undefined) {
             res.json({ success: false, message: "token not valid" });
             return;
         }
-        const olduser = await User.findOne({ _id:id, email });
+        const olduser = await User.findOne({ email });
         if (!olduser) {
             res.json({ success: false, message: "token is not valid" });
             return;

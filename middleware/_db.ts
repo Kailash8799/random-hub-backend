@@ -7,7 +7,8 @@ const connectDb = () => {
         mongoose.set("strictQuery", true);
         mongoose.connect(MONGO_URI).then(() => {
             console.log("Connected succesfully")
-        }).catch(() => {
+        }).catch((error) => {
+            console.log(error);
             console.log("Some error occured in mongodb connection ")
         })
     } catch (error) {
