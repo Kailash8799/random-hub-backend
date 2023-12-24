@@ -6,6 +6,7 @@ import { createServer } from 'http'
 import bodyParser from 'body-parser';
 import loginModule from './routes/users/login'
 import signupModule from './routes/users/singup'
+import welcomeModule from './routes/default/welcome'
 
 const PORT = process.env.PORT || 5500;
 const app = express();
@@ -14,6 +15,7 @@ const io = new Server(server, {});
 
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(bodyParser.json());
+app.use("/", welcomeModule)
 app.use("/v1/users/signin", loginModule);
 app.use("/v1/users/signup", signupModule);
 

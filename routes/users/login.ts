@@ -12,8 +12,6 @@ router.post("/", async (req, res) => {
         }
 
         const { email, password } = req.body;
-        console.log(email)
-        console.log(password)
         if (email === undefined || password === undefined) {
             res.json({ success: false, message: "Invalid credentials" });
             return;
