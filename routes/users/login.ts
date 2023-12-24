@@ -1,3 +1,4 @@
+require('dotenv').config()
 import express from 'express'
 import User from '../../models/User';
 import CryptoJS from "crypto-js";
@@ -5,36 +6,34 @@ import jwt from "jsonwebtoken";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-    try {   
+    try {
         if (req.method !== "POST") {
             res.json({ success: false, message: "Some error occured!" });
             return;
         }
-
         const { email, password } = req.body;
         if (email === undefined || password === undefined) {
             res.json({ success: false, message: "Invalid credentials" });
             return;
         }
-
-        const user = await User.findOne({ email });
-        if (!user) {
+        const olduser = await User.findOne({ email });
+        if (!olduser) {
             res.json({ success: false, message: "Invalid credentials" });
             return;
         }
 
-        var pword = CryptoJS.AES.decrypt(user.password, process.env.PASSWORD_KEY);
-        var originalpass = pword.toString(CryptoJS.enc.Utf8);
-        if (originalpass !== password) {
+        var cypherpassword = CryptoJS.AES.decrypt(olduser?.password, process.env.PASSWORD_KEY);
+        var originalpassword = cypherpassword.toString(CryptoJS.enc.Utf8);
+        if (originalpassword !== password) {
             res.json({ success: false, message: "Invalid credentials" });
             return;
         }
-
-        const token = jwt.sign({ data: 'foobar' }, 'secret', { expiresIn: '1h' });
+        const token = jwt.sign({  name: olduser?.username, email: olduser?.email, success: true }, process.env.JWT_SECRET, { expiresIn: '10d', algorithm: "HS384" });
 
         res.json({ token, success: true, message: "Login Successfull" });
 
     } catch (error) {
+        console.log(error);
         res.json({ success: false, message: "Some error occured!" }).status(401);
         return;
     }
