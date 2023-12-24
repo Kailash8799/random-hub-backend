@@ -18,7 +18,7 @@ const io = new Server(server, {});
 
 connectDb();
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(bodyParser.json());
 app.use("/", welcomeModule)
 app.use("/v1/users/signin", loginModule);
