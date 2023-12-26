@@ -31,9 +31,9 @@ router.post("/", async (req, res) => {
             res.json({ success: false, message: "Invalid credentials" });
             return;
         }
-        const token = jwt.sign({ name: olduser?.username, email: olduser?.email }, process.env.JWT_SECRET, { expiresIn: '10d', algorithm: "HS384" });
+        const token = jwt.sign({ name: olduser?.username, email: olduser?.email, gender: olduser?.gender, location: olduser?.location, premiumuser: olduser?.premiumuser, interest: olduser?.interest }, process.env.JWT_SECRET, { expiresIn: '10d', algorithm: "HS384" });
 
-        res.json({ token, success: true, message: "Login Successfull" });
+        res.json({token, success: true, message: "Login Successfull"});
 
     } catch (error) {
         console.log(error);

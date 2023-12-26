@@ -21,13 +21,22 @@ const UserSchema = new mongoose.Schema({
     age: {
         type: Number,
     },
+    gender: {
+        type: String,
+        default: "OTHER"
+    },
     location: {
         type: String,
+        default: "WORLD"
     },
     premiumuser: {
-        type: Boolean
+        type: Boolean,
+        default: false,
     },
-    interest: [],
+    interest: {
+        type: String,
+        default: "ALL"
+    },
 }, { timestamps: true })
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);
