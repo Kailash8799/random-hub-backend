@@ -98,6 +98,10 @@ io.on("connection", (socket) => {
         io.to(to).emit("call:accepted", { from: socket.id, answer })
     })
 
+    socket.on('ice-candidate', (data) => {
+        io.to(data.id).emit('ice-candidate', data.candidate);
+    });
+
     socket.on("peer:nego:needed", ({ to, offer }) => {
         console.log("peer:nego:needed", offer);
         io.to(to).emit("peer:nego:needed", { from: socket.id, offer });
