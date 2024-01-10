@@ -25,13 +25,13 @@ router.post("/create-checkout-session", async (req, res) => {
         }
 
         const customer = await stripe.customers.create({
-            name: 'Jenny Rosen',
+            name: olduser?.username,
             address: {
                 line1: '510 Townsend St',
                 postal_code: '98140',
                 city: 'San Francisco',
                 state: 'CA',
-                country: 'US',
+                country: 'INDIA',
             },
             email: email,
             metadata: {
