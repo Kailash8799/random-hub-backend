@@ -27,11 +27,21 @@ router.post("/create-checkout-session", async (req, res) => {
         const customer = await stripe.customers.create({
             name: olduser?.username,
             address: {
-                line1: '510 Townsend St',
-                postal_code: '98140',
-                city: 'San Francisco',
-                state: 'CA',
-                country: 'INDIA',
+                line1: 'Caspia 102',
+                postal_code: '387001',
+                city: 'Nadiad',
+                state: 'GJ',
+                country: 'IND',
+            },
+            shipping: {
+                name: 'Jenny Rosen',
+                address: {
+                    line1: '510 Townsend St',
+                    postal_code: '98140',
+                    city: 'San Francisco',
+                    state: 'CA',
+                    country: 'US',
+                },
             },
             email: email,
             metadata: {
