@@ -33,6 +33,19 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    premiumtype: {
+        type: String,
+        default: "NONE",
+        enum: ["NONE", "BASIC", "PRO"]
+    },
+    premiumstartdate: {
+        type: Date,
+        default: null
+    },
+    premiumenddate: {
+        type: Date,
+        default: null
+    },
     interest: {
         type: String,
         default: "ALL"
