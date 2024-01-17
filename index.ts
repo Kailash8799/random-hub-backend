@@ -142,6 +142,15 @@ io.on('connection', (socket: Socket) => {
         })
         await userManager.addUser(data?.name, data?.gender, data?.location, socket);
     })
+
+    socket.on("skip:user", async () => {
+        let id = await userManager.skipUser(socket.id);
+        if (id !== undefined && id !== null) {
+            await userManager.addToQueue(id);
+            io.to(id).emit("user:skiped");
+        }
+    })
+
     socket.on("disconnect", async () => {
         console.log("user disconnected");
         let id = await userManager.removeUser(socket.id);

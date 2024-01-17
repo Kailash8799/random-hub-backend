@@ -15,6 +15,7 @@ export interface ConnectedUser {
 
 export class UserManager {
     public connectedUsers: ConnectedUser[];
+    public connectedUsersMap: Map<string, string | null>;
     private users: User[];
     private queue: string[];
     private roomManager: RoomManager;
@@ -23,6 +24,7 @@ export class UserManager {
         this.users = [];
         this.queue = [];
         this.connectedUsers = [];
+        this.connectedUsersMap = new Map();
         this.roomManager = new RoomManager();
     }
 
@@ -30,6 +32,7 @@ export class UserManager {
         this.users.push({
             name, socket, gender, location
         })
+        this.connectedUsersMap.set(socket.id, null);
         this.queue.push(socket.id);
         socket.emit("lobby");
         await this.clearQueue()
@@ -38,25 +41,29 @@ export class UserManager {
 
     async removeUser(socketId: string) {
         this.users = this.users.filter(x => x.socket.id !== socketId);
-        const index = this.connectedUsers.findIndex(x => x.id === socketId);
-        let us: { id: string, peerId: string } = this.connectedUsers.filter(x => x.id === socketId)[0];
-        let peerId = us?.peerId;
-        if (peerId !== null && peerId !== undefined) {
-            const index2 = this.connectedUsers.findIndex(x => x.id === peerId)
-            if (index2 !== -1) {
-                this.connectedUsers[index2].peerId = null
-            }
-        }
-        this.connectedUsers.splice(index, 1);
         this.queue = this.queue.filter(x => x !== socketId);
+        let peerId = this.connectedUsersMap.get(socketId);
+        if (peerId !== null && peerId !== undefined) {
+            this.connectedUsersMap.set(peerId, null);
+        }
+        this.connectedUsersMap.delete(socketId);
+        return peerId;
+    }
+
+    async skipUser(socketId: string) {
+        let peerId = this.connectedUsersMap.get(socketId);
+        if (peerId !== null && peerId !== undefined) {
+            this.connectedUsersMap.set(peerId, null);
+        }
+        this.connectedUsersMap.set(socketId, null);
+        await this.addToQueue(socketId);
         return peerId;
     }
 
     async addToQueue(id: string) {
         this.queue.push(id);
-        console.log("Add in addToQueue :: :: " + id)
         this.clearQueue();
-    }   
+    }
 
     async clearQueue() {
         console.log("inside clear queues")
@@ -86,11 +93,8 @@ export class UserManager {
             return;
         }
         console.log("creating roonm");
-        const index = this.connectedUsers.findIndex(x => x.id === user1.socket.id);
-        const index2 = this.connectedUsers.findIndex(x => x.id === user2.socket.id);
-        console.log(this.connectedUsers)
-        this.connectedUsers[index].peerId = user2.socket.id;
-        this.connectedUsers[index2].peerId = user1.socket.id;
+        this.connectedUsersMap.set(user1.socket.id, user2.socket.id);
+        this.connectedUsersMap.set(user2.socket.id, user1.socket.id);
         this.roomManager.createRoom(user1, user2);
         this.clearQueue();
     }
