@@ -14,9 +14,13 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    profileupdated: {
+        type: Boolean,
+        default: false
+    },
     emailVerified: {
         type: Boolean,
-        required: true,
+        default: false,
     },
     age: {
         type: Number,
