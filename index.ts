@@ -136,10 +136,6 @@ const userManager = new UserManager();
 io.on('connection', (socket: Socket) => {
     console.log('a user connected');
     socket.on("room:join", async (data) => {
-        userManager.connectedUsers.push({
-            id: socket.id,
-            peerId: null
-        })
         await userManager.addUser(data?.name, data?.gender, data?.location, socket);
     })
 
@@ -151,13 +147,17 @@ io.on('connection', (socket: Socket) => {
         }
     })
 
+    socket.on("sendMessage", ({ roomId, message }: { roomId: string, message: string }) => {
+        io.to(roomId).emit("getMessage", { message });
+    })
+
     socket.on("disconnect", async () => {
         console.log("user disconnected");
         let id = await userManager.removeUser(socket.id);
         console.log("Remote : " + id)
         if (id !== undefined && id !== null) {
-            await userManager.addToQueue(id);
             io.to(id).emit("remotedisconnect");
+            await userManager.addToQueue(id);
         }
         // disconnectUser(socket)
     })

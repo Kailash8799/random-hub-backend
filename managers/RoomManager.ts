@@ -47,10 +47,12 @@ export class RoomManager {
             return;
         }
         const receivingUser = room.user1.socket.id === senderSocketid ? room.user2: room.user1;
+        const messageUser = room.user1.socket.id !== senderSocketid ? room.user2: room.user1;
 
         receivingUser?.socket.emit("answer", {
             sdp,
-            roomId
+            roomId,
+            id:messageUser.socket.id
         });
     }
 
@@ -62,7 +64,6 @@ export class RoomManager {
         const receivingUser = room.user1.socket.id === senderSocketid ? room.user2: room.user1;
         receivingUser.socket.emit("add-ice-candidate", ({candidate, type}));
     }
-
     generate() {
         return GLOBAL_ROOM_ID++;
     }

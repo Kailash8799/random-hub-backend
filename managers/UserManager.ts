@@ -14,7 +14,7 @@ export interface ConnectedUser {
 }
 
 export class UserManager {
-    public connectedUsers: ConnectedUser[];
+    // public connectedUsers: ConnectedUser[];
     public connectedUsersMap: Map<string, string | null>;
     private users: User[];
     private queue: string[];
@@ -23,7 +23,6 @@ export class UserManager {
     constructor() {
         this.users = [];
         this.queue = [];
-        this.connectedUsers = [];
         this.connectedUsersMap = new Map();
         this.roomManager = new RoomManager();
     }
@@ -66,15 +65,12 @@ export class UserManager {
     }
 
     async clearQueue() {
-        console.log("inside clear queues")
-        console.log(this.queue);
         if (this.queue.length < 2) {
             console.log("length is less than 2 return from here");
             return;
         }
         const id1 = this.queue.pop();
         const id2 = this.queue.pop();
-        console.log("id is " + id1 + " " + id2);
         const user1 = this.users.find(x => x.socket.id === id1);
         const user2 = this.users.find(x => x.socket.id === id2);
 
@@ -96,6 +92,7 @@ export class UserManager {
         this.connectedUsersMap.set(user1.socket.id, user2.socket.id);
         this.connectedUsersMap.set(user2.socket.id, user1.socket.id);
         this.roomManager.createRoom(user1, user2);
+        console.log(this.connectedUsersMap)
         this.clearQueue();
     }
 
