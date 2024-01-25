@@ -89,6 +89,11 @@ export class UserManager {
             return;
         }
         console.log("creating roonm");
+        if (user1.socket.id == user2.socket.id) {
+            this.queue.push(user1.socket.id);
+            this.clearQueue();
+            return;
+        }
         this.connectedUsersMap.set(user1.socket.id, user2.socket.id);
         this.connectedUsersMap.set(user2.socket.id, user1.socket.id);
         this.roomManager.createRoom(user1, user2);

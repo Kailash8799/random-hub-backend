@@ -142,8 +142,10 @@ io.on('connection', (socket: Socket) => {
     socket.on("skip:user", async () => {
         let id = await userManager.skipUser(socket.id);
         if (id !== undefined && id !== null) {
-            await userManager.addToQueue(id);
             io.to(id).emit("user:skiped");
+            setTimeout(async () => {
+                await userManager.addToQueue(id);
+            }, 1000);
         }
     })
 
@@ -157,7 +159,9 @@ io.on('connection', (socket: Socket) => {
         console.log("Remote : " + id)
         if (id !== undefined && id !== null) {
             io.to(id).emit("remotedisconnect");
-            await userManager.addToQueue(id);
+            setTimeout(async () => {
+                await userManager.addToQueue(id);
+            }, 1000);
         }
         // disconnectUser(socket)
     })
