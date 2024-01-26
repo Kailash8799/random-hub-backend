@@ -18,7 +18,7 @@ import { UserManager } from "./managers/UserManager";
 const PORT = process.env.PORT || 5500;
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {});
+const io = new Server(server, {pingInterval:60000});
 
 
 connectDb();
