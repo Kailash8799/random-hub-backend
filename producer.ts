@@ -5,14 +5,14 @@ async function init() {
 
     // connecting producer...
     await producer.connect();
-
-    await producer.send({
-        topic: 'user',
-        messages: [
-            { key: 'key1', value: 'hello world', partition: 0 },
-        ],
-    })
-
+    for (let index = 0; index < 100000; index++) {
+        await producer.send({
+            topic: 'user',
+            messages: [
+                { key: 'key', value: 'hello world', partition: 0 },
+            ],
+        })
+    }
     // disconnecting producer...
     await producer.disconnect();
 }
