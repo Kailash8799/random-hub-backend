@@ -2,7 +2,6 @@ import { kafka } from "./client";
 
 async function init() {
     try {
-
         const admin = kafka.admin();
         await admin.connect();
 

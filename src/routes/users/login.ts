@@ -3,6 +3,8 @@ import express from 'express'
 import User from '../../models/User';
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
+import { addUserToRedis } from '../../redis/userauth';
+import { Userprops } from '../../constants/props/user';
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -25,15 +27,24 @@ router.post("/", async (req, res) => {
             res.json({ success: false, message: "Email not verified!" });
             return;
         }
+        
         var cypherpassword = CryptoJS.AES.decrypt(olduser?.password, process.env.PASSWORD_KEY);
         var originalpassword = cypherpassword.toString(CryptoJS.enc.Utf8);
         if (originalpassword !== password) {
             res.json({ success: false, message: "Invalid credentials" });
             return;
         }
-        const token = jwt.sign({ name: olduser?.username, email: olduser?.email, gender: olduser?.gender, location: olduser?.location, premiumuser: olduser?.premiumuser, interest: olduser?.interest }, process.env.JWT_SECRET, { expiresIn: '10d', algorithm: "HS384" });
-
-        res.json({token, success: true, message: "Login Successfull"});
+        const user: Userprops = {
+            name: (olduser?.username) as string,
+            email: (olduser?.email) as string,
+            gender: (olduser?.gender) as string,
+            location: (olduser?.location) as string,
+            premiumuser: (olduser?.premiumuser) as string,
+            interest: (olduser?.interest) as string,
+        }
+        await addUserToRedis(user);
+        const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '10d', algorithm: "HS384" });
+        res.json({ token, success: true, message: "Login Successfull" });
 
     } catch (error) {
         console.log(error);

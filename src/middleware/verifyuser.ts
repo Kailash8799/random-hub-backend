@@ -1,8 +1,8 @@
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 var JWT_SECRET = process.env.JWT_SECRET;
 import User from "../models/User";
 
-async function Authuser(req, res, next) {
+async function Authuser(req , res, next) {
     try {
         const token = req.body.token;
         if (!token) {
@@ -12,7 +12,7 @@ async function Authuser(req, res, next) {
             });
         }
         const decode = jwt.verify(token, JWT_SECRET);
-        const { email } = decode;
+        const { email } = decode as JwtPayload;
         let ur = await User.findOne(
             { email: email },
             { username: 0, email: 0, password: 0 }

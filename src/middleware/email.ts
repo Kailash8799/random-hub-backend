@@ -38,11 +38,11 @@ const sendMail = async ({ to_email, htmlemail, subject }: SendMailProps) => {
 
         const success = await new Promise((resolve, reject) => {
             // send mail
-            transporter.sendMail(mailOptions).then((info, err) => {
+            transporter.sendMail(mailOptions).then((info) => {
                 if (info.response.includes("250")) {
                     resolve(true);
                 }
-                reject(err);
+                reject(false);
             });
         });
 

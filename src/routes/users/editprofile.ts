@@ -1,7 +1,8 @@
 require('dotenv').config()
 import express from 'express'
 import User from '../../models/User';
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { verifyUserinRedis } from '../../redis/userauth';
 const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET
@@ -14,9 +15,9 @@ router.post("/", async (req, res) => {
         }
         const { username, age, gender, location, interest, token } = req.body;
         const decode = jwt.verify(token, JWT_SECRET);
-        const { email } = decode;
-        const olduser = await User.findOne({ email });
-        if (olduser === null || olduser === undefined) {
+        const { email } = decode as JwtPayload;
+        const inRedis = await verifyUserinRedis(email);
+        if (!inRedis) {
             res.json({ success: false, message: "Invalid session please logout and login again!" });
             return;
         }

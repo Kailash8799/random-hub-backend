@@ -4,21 +4,21 @@ import cors from 'cors'
 import { Server, Socket } from 'socket.io'
 import { createServer } from 'http'
 import bodyParser from 'body-parser';
-import loginModule from './routes/users/login'
-import signupModule from './routes/users/singup'
-import forgotModule from './routes/users/forgotpassword'
-import verifyuserModule from './routes/users/verifyuser'
-import contactuserModule from './routes/users/contact'
-import editprofileModule from './routes/users/editprofile'
-import checkoutsessionModule from './routes/users/checkoutsession'
-import welcomeModule from './routes/default/welcome'
-import connectDb from "./middleware/_db";
-import { UserManager } from "./managers/UserManager";
+import loginModule from './src/routes/users/login'
+import signupModule from './src/routes/users/singup'
+import forgotModule from './src/routes/users/forgotpassword'
+import verifyuserModule from './src/routes/users/verifyuser'
+import contactuserModule from './src/routes/users/contact'
+import editprofileModule from './src/routes/users/editprofile'
+import checkoutsessionModule from './src/routes/users/checkoutsession'
+import welcomeModule from './src/routes/default/welcome'
+import connectDb from "./src/middleware/_db";
+import { UserManager } from "./src/managers/UserManager";
 
 const PORT = process.env.PORT || 5500;
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {pingInterval:60000});
+const io = new Server(server, { pingInterval: 60000 });
 
 
 connectDb();

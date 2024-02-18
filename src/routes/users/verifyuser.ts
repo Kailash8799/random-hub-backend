@@ -1,7 +1,7 @@
 require('dotenv').config()
 import express from 'express'
 import User from '../../models/User';
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import sendMail from '../../middleware/email';
 import { verifyemail } from '../../constants/template/verifyemail';
 import CryptoJS from "crypto-js";
@@ -61,7 +61,7 @@ router.post("/verify", async (req, res) => {
             res.json({ success: false, message: "token not valid" });
             return;
         }
-        const { email } = await jwt.verify(token, process.env.JWT_SECRET);
+        const { email } = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
         if (email === undefined) {
             res.json({ success: false, message: "token not valid" });
             return;

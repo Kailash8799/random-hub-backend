@@ -1,7 +1,7 @@
 require('dotenv').config()
 import express from 'express'
 import User from '../../models/User';
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import sendMail from '../../middleware/email';
 import CryptoJS from "crypto-js";
 import { forgotpasswordemailtemp } from '../../constants/template/forgotemail';
@@ -51,7 +51,7 @@ router.post("/resetpassword", async (req, res) => {
             res.json({ success: false, message: "token is invalid" });
             return;
         }
-        const { email } = await jwt.verify(token, process.env.JWT_SECRET);
+        const { email } = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
         if (email === undefined) {
             res.json({ success: false, message: "token is invalid" });
             return;
