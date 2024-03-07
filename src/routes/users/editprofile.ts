@@ -1,11 +1,11 @@
-require('dotenv').config()
 import express from 'express'
 import User from '../../models/User';
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { verifyUserinRedis } from '../../redis/userauth';
+import { ENV_VAR } from '../../constants/env';
 const router = express.Router();
 
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET = ENV_VAR.JWT_SECRET
 
 router.post("/", async (req, res) => {
     try {
@@ -16,7 +16,11 @@ router.post("/", async (req, res) => {
         const { username, age, gender, location, interest, token } = req.body;
         const decode = jwt.verify(token, JWT_SECRET);
         const { email } = decode as JwtPayload;
-        const inRedis = await verifyUserinRedis(email);
+        if (email === undefined || email === null) {
+            res.json({ success: false, message: "Invalid session please logout and login again!" });
+            return;
+        }
+        const inRedis = await verifyUserinRedis({ email: email });
         if (!inRedis) {
             res.json({ success: false, message: "Invalid session please logout and login again!" });
             return;

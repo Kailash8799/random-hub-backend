@@ -1,11 +1,11 @@
-require('dotenv').config()
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 import express from 'express'
 import User from '../../models/User';
+import { ENV_VAR } from '../../constants/env';
+const stripe = require('stripe')(ENV_VAR.STRIPE_SECRET_KEY);
 const router = express.Router();
 
-const YOUR_DOMAIN = process.env.RANDOMHUB
-const endpointSecret = process.env.WEBHOOK_SIGNING_SECRET;
+const YOUR_DOMAIN = ENV_VAR.RANDOMHUB
+const endpointSecret = ENV_VAR.WEBHOOK_SIGNING_SECRET;
 
 router.post("/create-checkout-session", async (req, res) => {
     try {

@@ -1,10 +1,10 @@
-require('dotenv').config()
 import express from 'express'
 import User from '../../models/User';
 import jwt, { JwtPayload } from "jsonwebtoken";
 import sendMail from '../../middleware/email';
 import { verifyemail } from '../../constants/template/verifyemail';
 import CryptoJS from "crypto-js";
+import { ENV_VAR } from '../../constants/env';
 const router = express.Router();
 
 router.post("/sendemail", async (req, res) => {
@@ -23,7 +23,7 @@ router.post("/sendemail", async (req, res) => {
             res.json({ success: false, message: "No user found with this email" });
             return;
         }
-        var cypherpassword = CryptoJS.AES.decrypt(olduser?.password, process.env.PASSWORD_KEY);
+        var cypherpassword = CryptoJS.AES.decrypt(olduser?.password, ENV_VAR.PASSWORD_KEY);
         var originalpassword = cypherpassword.toString(CryptoJS.enc.Utf8);
         if (originalpassword !== password) {
             res.json({ success: false, message: "Invalid credentials" });
@@ -33,7 +33,7 @@ router.post("/sendemail", async (req, res) => {
             res.json({ success: false, message: "Email already verified!" });
             return;
         }
-        const token = jwt.sign({ email: olduser?.email, success: true }, process.env.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
+        const token = jwt.sign({ email: olduser?.email, success: true }, ENV_VAR.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
         const htmlemail = await verifyemail(token);
         const email_responce = await sendMail({ htmlemail: htmlemail, subject: "Account Verification", to_email: email })
         if (email_responce) {
@@ -61,7 +61,7 @@ router.post("/verify", async (req, res) => {
             res.json({ success: false, message: "token not valid" });
             return;
         }
-        const { email } = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
+        const { email } = jwt.verify(token, ENV_VAR.JWT_SECRET) as JwtPayload;
         if (email === undefined) {
             res.json({ success: false, message: "token not valid" });
             return;

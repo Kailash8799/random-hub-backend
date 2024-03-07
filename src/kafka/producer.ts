@@ -1,20 +1,19 @@
+import { Partitioners } from 'kafkajs';
+import { contactProps } from '../constants/props/user';
 import { kafka } from './client'
 
-async function init() {
-    const producer = kafka.producer({});
-
+async function contactproducer(user: contactProps) {
+    const producer = kafka.producer({ createPartitioner: Partitioners.LegacyPartitioner });
     // connecting producer...
     await producer.connect();
-    for (let index = 0; index < 100000; index++) {
-        await producer.send({
-            topic: 'user',
-            messages: [
-                { key: 'key', value: 'hello world', partition: 0 },
-            ],
-        })
-    }
+    await producer.send({
+        topic: 'contact',
+        messages: [
+            { key: 'contact', value: JSON.stringify(user), partition: 0 },
+        ],
+    })
     // disconnecting producer...
     await producer.disconnect();
 }
 
-init();
+export { contactproducer };

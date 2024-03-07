@@ -1,10 +1,10 @@
-require('dotenv').config()
 import express from 'express'
 import User from '../../models/User';
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
 import sendMail from '../../middleware/email';
 import { verifyemail } from '../../constants/template/verifyemail';
+import { ENV_VAR } from '../../constants/env';
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
             res.json({ success: false, message: "User already exits" });
             return;
         }
-        const hashPassword = CryptoJS.AES.encrypt(password, process.env.PASSWORD_KEY).toString();
+        const hashPassword = CryptoJS.AES.encrypt(password, ENV_VAR.PASSWORD_KEY).toString();
 
         const newuser = new User({
             username: username,
@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
             res.json({ success: false, message: "Some error occured while creating account!" });
             return;
         }
-        const token = jwt.sign({ username, email }, process.env.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
+        const token = jwt.sign({ username, email }, ENV_VAR.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
         const htmlemail = await verifyemail(token);
         const email_responce = await sendMail({ htmlemail: htmlemail, subject: "Account Verification", to_email: email })
         if (email_responce) {

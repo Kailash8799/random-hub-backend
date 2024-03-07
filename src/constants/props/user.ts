@@ -6,3 +6,12 @@ export interface Userprops {
     premiumuser: string;
     interest: string;
 }
+
+export interface contactProps {
+    userId: string
+    firstname: string
+    lastname: string
+    email: string
+    subject: string
+    message: string
+}

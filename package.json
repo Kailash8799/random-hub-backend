@@ -4,7 +4,7 @@
   "description": "This is random hub server",
   "main": "index.ts",
   "scripts": {
-    "start": "node dist/index",
+    "start": "nodemon dist/index",
     "build": "tsc -p .",
     "ts.check": "tsc --project tsconfig.json",
     "add-build": "git add dist",

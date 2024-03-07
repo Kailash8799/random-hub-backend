@@ -1,4 +1,3 @@
-require('dotenv').config()
 import express from "express";
 import cors from 'cors'
 import { Server, Socket } from 'socket.io'
@@ -14,17 +13,20 @@ import checkoutsessionModule from './src/routes/users/checkoutsession'
 import welcomeModule from './src/routes/default/welcome'
 import connectDb from "./src/middleware/_db";
 import { UserManager } from "./src/managers/UserManager";
+import { ENV_VAR } from "./src/constants/env";
+import { initializeKafka } from "./src/kafka/admin";
 
-const PORT = process.env.PORT || 5500;
+const PORT = ENV_VAR.PORT || 5500;
 const app = express();
 const server = createServer(app);
 const io = new Server(server, { pingInterval: 60000 });
 
 
 connectDb();
+// initializeKafka();
 
 app.use(cors());
-// app.use(cors({ origin: `${process.env.RANDOMHUB}`}));
+// app.use(cors({ origin: `${ENV_VAR.RANDOMHUB}`}));
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use("/", welcomeModule)

@@ -1,10 +1,10 @@
-require('dotenv').config()
 import express from 'express'
 import User from '../../models/User';
 import jwt, { JwtPayload } from "jsonwebtoken";
 import sendMail from '../../middleware/email';
 import CryptoJS from "crypto-js";
 import { forgotpasswordemailtemp } from '../../constants/template/forgotemail';
+import { ENV_VAR } from '../../constants/env';
 const router = express.Router();
 
 router.post("/sendemail", async (req, res) => {
@@ -23,7 +23,7 @@ router.post("/sendemail", async (req, res) => {
             res.json({ success: false, message: "No user found with this email" });
             return;
         }
-        const token = jwt.sign({ email: olduser?.email }, process.env.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
+        const token = jwt.sign({ email: olduser?.email }, ENV_VAR.JWT_SECRET, { expiresIn: '1h', algorithm: "HS384" });
         const htmlemail = await forgotpasswordemailtemp(token);
         const email_responce = await sendMail({ htmlemail: htmlemail, subject: "Reset password", to_email: email })
         if (email_responce) {
@@ -51,7 +51,7 @@ router.post("/resetpassword", async (req, res) => {
             res.json({ success: false, message: "token is invalid" });
             return;
         }
-        const { email } = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
+        const { email } = jwt.verify(token, ENV_VAR.JWT_SECRET) as JwtPayload;
         if (email === undefined) {
             res.json({ success: false, message: "token is invalid" });
             return;
@@ -61,7 +61,7 @@ router.post("/resetpassword", async (req, res) => {
             res.json({ success: false, message: "No user found with this email" });
             return;
         }
-        const hashPassword = CryptoJS.AES.encrypt(password, process.env.PASSWORD_KEY).toString();
+        const hashPassword = CryptoJS.AES.encrypt(password, ENV_VAR.PASSWORD_KEY).toString();
         await User.findOneAndUpdate({ email: email }, { password: hashPassword });
         res.json({ success: true, message: "Password updated successfully!" });
         return;

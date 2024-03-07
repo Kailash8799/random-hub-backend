@@ -1,10 +1,10 @@
-require('dotenv').config()
 import express from 'express'
 import User from '../../models/User';
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
 import { addUserToRedis } from '../../redis/userauth';
 import { Userprops } from '../../constants/props/user';
+import { ENV_VAR } from '../../constants/env';
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
             return;
         }
         
-        var cypherpassword = CryptoJS.AES.decrypt(olduser?.password, process.env.PASSWORD_KEY);
+        var cypherpassword = CryptoJS.AES.decrypt(olduser?.password, ENV_VAR.PASSWORD_KEY);
         var originalpassword = cypherpassword.toString(CryptoJS.enc.Utf8);
         if (originalpassword !== password) {
             res.json({ success: false, message: "Invalid credentials" });
@@ -43,7 +43,7 @@ router.post("/", async (req, res) => {
             interest: (olduser?.interest) as string,
         }
         await addUserToRedis(user);
-        const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '10d', algorithm: "HS384" });
+        const token = jwt.sign(user, ENV_VAR.JWT_SECRET, { expiresIn: '10d', algorithm: "HS384" });
         res.json({ token, success: true, message: "Login Successfull" });
 
     } catch (error) {

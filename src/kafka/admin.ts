@@ -1,15 +1,17 @@
 import { kafka } from "./client";
+import { consumerinit } from "./consumer";
 
-async function init() {
+async function admininit() {
     try {
         const admin = kafka.admin();
         await admin.connect();
-
         await admin.createTopics({
-            topics: [{
-                topic: 'user',
-                numPartitions: 2,
-            }],
+            topics: [
+                {
+                    topic: 'contact',
+                    numPartitions: 2,
+                },
+            ],
         });
         await admin.disconnect();
     } catch (error) {
@@ -17,4 +19,13 @@ async function init() {
     }
 }
 
-init();
+async function initializeKafka() {
+    try {
+        await admininit();
+        await consumerinit();
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export { initializeKafka };

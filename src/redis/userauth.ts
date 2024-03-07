@@ -15,8 +15,11 @@ async function addUserToRedis(user: Userprops) {
 
 async function verifyUserinRedis({ email }: { email: string }) {
     try {
-        const inRedis = await redisClient.hgetall(`user:${email}`);
+        const inRedis = await redisClient.hgetall(`user:${email.trim()}`);
+        console.log("Outside Redis");
+        console.log(inRedis)
         if (!inRedis) {
+            console.log("In Redis");
             const olduser = await User.findOne({ email });
             if (olduser === null || olduser === undefined) {
                 return false;
