@@ -1,7 +1,7 @@
 import express from 'express'
 import User from '../../models/User';
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { verifyUserinRedis } from '../../redis/userauth';
+// import { verifyUserinRedis } from '../../redis/userauth';
 import { ENV_VAR } from '../../constants/env';
 const router = express.Router();
 
@@ -20,8 +20,10 @@ router.post("/", async (req, res) => {
             res.json({ success: false, message: "Invalid session please logout and login again!" });
             return;
         }
-        const inRedis = await verifyUserinRedis({ email: email });
-        if (!inRedis) {
+        // const inRedis = await verifyUserinRedis({ email: email });
+        const olduser = await User.findOne({ email });
+        
+        if (!olduser) {
             res.json({ success: false, message: "Invalid session please logout and login again!" });
             return;
         }

@@ -14,7 +14,7 @@ import welcomeModule from './src/routes/default/welcome'
 import connectDb from "./src/middleware/_db";
 import { UserManager } from "./src/managers/UserManager";
 import { ENV_VAR } from "./src/constants/env";
-import { initializeKafka } from "./src/kafka/admin";
+// import { initializeKafka } from "./src/kafka/admin";
 
 const PORT = ENV_VAR.PORT || 5500;
 const app = express();
@@ -137,10 +137,11 @@ const userManager = new UserManager();
 
 io.on('connection', (socket: Socket) => {
     console.log('a user connected');
+    console.log(userManager.connectedUsersMap)
     socket.on("room:join", async (data) => {
         await userManager.addUser(data?.name, data?.gender, data?.location, socket);
     })
-
+    
     socket.on("skip:user", async () => {
         let id = await userManager.skipUser(socket.id);
         if (id !== undefined && id !== null) {

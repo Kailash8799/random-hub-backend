@@ -2,7 +2,7 @@ import express from 'express'
 import User from '../../models/User';
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
-import { addUserToRedis } from '../../redis/userauth';
+// import { addUserToRedis } from '../../redis/userauth';
 import { Userprops } from '../../constants/props/user';
 import { ENV_VAR } from '../../constants/env';
 const router = express.Router();
@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
             premiumuser: (olduser?.premiumuser) as string,
             interest: (olduser?.interest) as string,
         }
-        await addUserToRedis(user);
+        // await addUserToRedis(user);
         const token = jwt.sign(user, ENV_VAR.JWT_SECRET, { expiresIn: '10d', algorithm: "HS384" });
         res.json({ token, success: true, message: "Login Successfull" });
 
