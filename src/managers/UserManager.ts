@@ -36,6 +36,7 @@ export class UserManager {
         socket.emit("lobby");
         await this.clearQueue()
         await this.initHandlers(socket);
+        return this.users.length;
     }
 
     async removeUser(socketId: string) {
@@ -46,7 +47,8 @@ export class UserManager {
             this.connectedUsersMap.set(peerId, null);
         }
         this.connectedUsersMap.delete(socketId);
-        return peerId;
+        const len = this.users.length;
+        return { peerId, len };
     }
 
     async skipUser(socketId: string) {

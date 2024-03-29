@@ -139,7 +139,8 @@ io.on('connection', (socket: Socket) => {
     console.log('a user connected');
     console.log(userManager.connectedUsersMap)
     socket.on("room:join", async (data) => {
-        await userManager.addUser(data?.name, data?.gender, data?.location, socket);
+        const users = await userManager.addUser(data?.name, data?.gender, data?.location, socket);
+        io.emit("online:users", { users });
     })
 
     socket.on("skip:user", async () => {
@@ -163,14 +164,14 @@ io.on('connection', (socket: Socket) => {
         socket.broadcast.to(roomId).emit('user-connected', userId)
     })
 
-    socket.on('user-toggle-audio', (userId, roomId) => {
+    socket.on('user-toggle-audio', (userId, roomId, muted) => {
         socket.join(roomId)
-        socket.broadcast.to(roomId).emit('user-toggle-audio', userId)
+        socket.broadcast.to(roomId).emit('user-toggle-audio', muted)
     })
 
-    socket.on('user-toggle-video', (userId, roomId) => {
+    socket.on('user-toggle-video', (userId, roomId, visible) => {
         socket.join(roomId)
-        socket.broadcast.to(roomId).emit('user-toggle-video', userId)
+        socket.broadcast.to(roomId).emit('user-toggle-video', visible)
     })
 
     socket.on('user-leave', (userId, roomId) => {
@@ -180,8 +181,9 @@ io.on('connection', (socket: Socket) => {
 
     socket.on("disconnect", async () => {
         console.log("user disconnected");
-        let id = await userManager.removeUser(socket.id);
+        let { peerId: id, len } = await userManager.removeUser(socket.id);
         console.log("Remote : " + id)
+        io.emit("online:users", { users: len });
         if (id !== undefined && id !== null) {
             io.to(id).emit("remotedisconnect");
             setTimeout(async () => {
