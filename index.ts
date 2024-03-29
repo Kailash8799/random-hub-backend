@@ -141,7 +141,7 @@ io.on('connection', (socket: Socket) => {
     socket.on("room:join", async (data) => {
         await userManager.addUser(data?.name, data?.gender, data?.location, socket);
     })
-    
+
     socket.on("skip:user", async () => {
         let id = await userManager.skipUser(socket.id);
         if (id !== undefined && id !== null) {
@@ -153,7 +153,29 @@ io.on('connection', (socket: Socket) => {
     })
 
     socket.on("sendMessage", ({ roomId, message }: { roomId: string, message: string }) => {
-        io.to(roomId).emit("getMessage", { message });
+        socket.broadcast.to(roomId).emit("getMessage", { message });
+        // io.to(roomId).emit("getMessage", { message });
+    })
+
+    socket.on('join-room', (roomId, userId) => {
+        console.log(`a new user ${userId} joined room ${roomId}`)
+        socket.join(roomId)
+        socket.broadcast.to(roomId).emit('user-connected', userId)
+    })
+
+    socket.on('user-toggle-audio', (userId, roomId) => {
+        socket.join(roomId)
+        socket.broadcast.to(roomId).emit('user-toggle-audio', userId)
+    })
+
+    socket.on('user-toggle-video', (userId, roomId) => {
+        socket.join(roomId)
+        socket.broadcast.to(roomId).emit('user-toggle-video', userId)
+    })
+
+    socket.on('user-leave', (userId, roomId) => {
+        socket.join(roomId)
+        socket.broadcast.to(roomId).emit('user-leave', userId)
     })
 
     socket.on("disconnect", async () => {
