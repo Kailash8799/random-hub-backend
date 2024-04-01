@@ -11,6 +11,7 @@ import contactuserModule from './src/routes/users/contact'
 import editprofileModule from './src/routes/users/editprofile'
 import checkoutsessionModule from './src/routes/users/checkoutsession'
 import welcomeModule from './src/routes/default/welcome'
+import validatetokenModule from './src/routes/users/verifyusertoken'
 import connectDb from "./src/middleware/_db";
 import { UserManager } from "./src/managers/UserManager";
 import { ENV_VAR } from "./src/constants/env";
@@ -30,6 +31,7 @@ app.use(cors());
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use("/", welcomeModule)
+app.use("/v1/users/verifyuser", validatetokenModule)
 app.use("/v1/users/signin", loginModule);
 app.use("/v1/users/signup", signupModule);
 app.use("/v1/users/forgot", forgotModule);
@@ -157,11 +159,15 @@ io.on('connection', (socket: Socket) => {
         socket.broadcast.to(roomId).emit("getMessage", { message });
         // io.to(roomId).emit("getMessage", { message });
     })
+    socket.on("getuserdata", ({ roomId, data }: { roomId: string, data: any }) => {
+        socket.broadcast.to(roomId).emit("getuserdata", data);
+    })
 
-    socket.on('join-room', (roomId, userId) => {
+    socket.on('join-room', (roomId, userId,data) => {
         console.log(`a new user ${userId} joined room ${roomId}`)
+        console.log(data)
         socket.join(roomId)
-        socket.broadcast.to(roomId).emit('user-connected', userId)
+        socket.broadcast.to(roomId).emit('user-connected', userId,data)
     })
 
     socket.on('user-toggle-audio', (userId, roomId, muted) => {
