@@ -20,10 +20,10 @@ router.post("/", async (req, res) => {
             res.json({ success: false, message: "Invalid session please logout and login again!" });
             return;
         }
-        console.log(email)
+        // console.log(email)
         // const inRedis = await verifyUserinRedis({ email: email });
         const olduser = await User.findOne({ email }).select("gender location premiumuser username interest email -_id");
-        console.log(olduser)
+        // console.log(olduser)
         if (!olduser) {
             res.json({ success: false, message: "Invalid session please logout and login again!" });
             return;

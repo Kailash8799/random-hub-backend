@@ -1,5 +1,6 @@
 import { ENV_VAR } from '../../constants/env';
-import { contactproducer } from '../../kafka/producer';
+import { addContact } from '../../kafka/methods';
+// import { contactproducer } from '../../kafka/producer';
 import User from '../../models/User';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
@@ -20,14 +21,22 @@ async function contactController(req, res) {
             res.json({ success: false, message: "Invalid session please logout and login again!" });
             return;
         }
-        contactproducer({
+        // contactproducer({
+        //     userId: olduser._id,
+        //     firstname,
+        //     lastname,
+        //     email,
+        //     subject,
+        //     message
+        // });
+        await addContact({
             userId: olduser._id,
             firstname,
             lastname,
             email,
             subject,
             message
-        });
+        })
         res.json({ success: true, message: "Message sended successfully!" });
         return;
 
